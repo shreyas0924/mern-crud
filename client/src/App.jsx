@@ -1,5 +1,5 @@
 import { useEffect, useState, useId } from 'react'
-
+import axios from 'axios'
 import './App.css'
 
 function App() {
@@ -8,35 +8,63 @@ function App() {
   const [email, setEmail] = useState('')
   const [studentData, setStudentData] = useState([])
 
-  async function registerUser(event) {
+  function registerUser(event) {
     event.preventDefault()
-    const response = await fetch('http://localhost:3000/post', {
+    fetch('http://localhost:3000/post', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ name, email }),
     })
-
-    const data = await response.json()
-    console.log(data)
+      .then((response) => response.json())
+      .then(() =>
+        setStudentData([...studentData, { name: name, email: email }])
+      )
     setName('')
     setEmail('')
   }
-
   useEffect(() => {
-    async function getData() {
-      const res = await fetch('http://localhost:3000/read', {
+    function getData() {
+      fetch('http://localhost:3000/read', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       })
-      const data = await res.json()
-      setStudentData(data)
+        .then((res) => res.json())
+        .then((data) => setStudentData(data))
     }
     getData()
-  }, [name, email])
+  }, [])
+
+  // function updateName(id) {
+  //   const newName = prompt('Enter new name : ')
+  //   axios
+  //     .put('http://localhost:3000/update', {
+  //       newName: newName,
+  //       id: id,
+  //     })
+  //     .then(() =>
+  //       setStudentData(
+  //         studentData.map((val) => {
+  //           return val._id == id
+  //             ? { _id: id, name: newName, email: val.email }
+  //             : val
+  //         })
+  //       )
+  //     )
+  // }
+
+  function deleteStudent(id) {
+    axios.delete(`http://localhost:3000/delete/${id}`).then(() =>
+      setStudentData(
+        studentData.filter((value) => {
+          return value._id != id
+        })
+      )
+    )
+  }
 
   return (
     <div className='App'>
@@ -61,7 +89,7 @@ function App() {
       <div className=' w-[50%] ml-auto mr-auto'>
         <div className='flex justify-between border-white border-2 mt-5 '>
           <h2 className='font-bold'>Name</h2>
-          <h2 className='font-bold'>Email</h2>
+          <h2 className='font-bold mr-[30%]'>Email</h2>
         </div>
         <div className='flex justify-between '>
           <div>
@@ -74,8 +102,13 @@ function App() {
               <div className='flex justify-between  '>
                 <tr>{row.email}</tr>
 
-                <button>Update</button>
-                <button>Delete</button>
+                <button
+                  className='ml-5 mr-5'
+                  onClick={() => updateName(row._id)}
+                >
+                  Update
+                </button>
+                <button onClick={() => deleteStudent(row._id)}>Delete</button>
               </div>
             ))}
           </div>

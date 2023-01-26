@@ -29,11 +29,31 @@ app.post('/post', async (req, res) => {
 
 app.get('/read', async (req, res) => {
   Student.find({}, (err, result) => {
-    if(err){
+    if (err) {
       res.send(err)
     }
     res.send(result)
   })
+})
+
+// app.put('/update', async (req, res) => {
+//   const name = req.body.name
+//   const newName = req.body.newName
+//   const id = req.body._id
+//   try {
+//     await Student.findById(id, (error, result) => {
+//       result.name = newName
+//       result.save()
+//     })
+//   } catch (err) {
+//     console.log(err)
+//   }
+// })
+
+app.delete('/delete/:id', async (req, res) => {
+  const id = req.params.id
+  await Student.findByIdAndRemove(id).exec()
+  res.send('item deleted')
 })
 
 app.listen(3000, () => {
