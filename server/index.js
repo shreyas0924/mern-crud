@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }))
 mongoose.set('strictQuery', true)
 mongoose.connect('mongodb://localhost:27017/student')
 
-app.post('/api/details', async (req, res) => {
+app.post('/post', async (req, res) => {
   console.log(req.body)
 
   try {
@@ -27,26 +27,14 @@ app.post('/api/details', async (req, res) => {
   }
 })
 
-// app.post('/api/login', async (req, res) => {
-//   const user = await User.findOne({
-//     email: req.body.email,
-//     password: req.body.password,
-//   })
-
-//   if (user) {
-//     const token = jwt.sign(
-//       {
-//         name: user.name,
-//         email: user.email,
-//       },
-//       'secret123'
-//     )
-
-//     return res.json({ status: 'ok', user: token })
-//   } else {
-//     return res.json({ status: 'error', user: token })
-//   }
-// })
+app.get('/read', async (req, res) => {
+  Student.find({}, (err, result) => {
+    if(err){
+      res.send(err)
+    }
+    res.send(result)
+  })
+})
 
 app.listen(3000, () => {
   console.log('server started on 3000')
